@@ -1,9 +1,10 @@
 # zRxnx's Armour System
 
-This is a advanced armour system for fivem
+This is an advanced armour system for fivem
 
 <b>Features:</b>
 - Item based
+- Multiple armour support
 - Remove armour on break
 - Load and Save armour after disconnect
 - Vest with configurable textures
@@ -14,7 +15,7 @@ This is a advanced armour system for fivem
 
 ## Requirements
 - es_extended
-- esx_progressbar (recommended)
+- esx_progressbar
 
 ## Installation
 - Download script

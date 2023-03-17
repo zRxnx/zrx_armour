@@ -5,7 +5,7 @@ local continueCheck = true
 
 CreateThread(function()
     if curResName ~= 'zrx_armour' then
-        resourceName = 'zrx_armour (' .. curResName .. ')'
+        resourceName = ('zrx_armour (%s)'):format(curResName)
     end
 end)
 

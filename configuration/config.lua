@@ -1,6 +1,7 @@
 local seconds, minutes = 1000, 60000
 Config = {}
 
+--| Discord Webhook in 'server/server.lua'
 Config.RemoveArmourOnBreak = true --| Should the vest be removed after he has no more armour
 Config.LoadAndSaveArmour = true --| Save the armour in database?
 
