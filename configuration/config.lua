@@ -1,83 +1,93 @@
 local seconds, minutes = 1000, 60000
 Config = {}
 
---| Discord Webhook in 'server/server.lua'
-Config.RemoveArmourOnBreak = true --| Should the vest be removed after he has no more armour
-Config.LoadAndSaveArmour = true --| Save the armour in database?
-
-Config.Default = {
-    vest = {
-        texture = 15, --| Vest texture
-        secTexture = 2 --| Vest 2nd texture
-    }
-}
+Config.RemoveArmourOnBreak = true --| Should the vest be removed after no more armour
+Config.ForceComponent = true --| Reset player component while armour active
+Config.LoadAndSaveArmour = true --| Save armour in database?
+Config.Cooldown = 60 --| In seconds
+Config.OnPlayerDeathEvent = 'esx:onPlayerDeath' --| Event listener
 
 Config.Armour = {
     {
         item = 'bulletproof_small', --| Item name
         usetime = 10 * seconds, --| Usetime
-        value = 250, --| 0-100 armour value
+        value = 25, --| 0 - 100 value
+        allowedInVehicles = false, --| Enabled?
+        allowedJobs = { --| Allowed jobs
+            unemployed = true
+        },
         vest = {
-            texture = 15, --| Vest texture
-            secTexture = 2 --| Vest 2nd texture
+            drawable = 15, --| Vest drawable
+            texture = 2 --| Vest texture
         },
         anim = {
-            dict = 'anim@heists@narcotics@funding@gang_idle', --| dict
-            lib = 'gang_chatting_idle01' --| lib
+            dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
+            lib = 'gang_chatting_idle01' --| Lib
+        }
+    },
+
+    {
+        item = 'bulletproof_medium', --| Item name
+        usetime = 15 * seconds, --| Usetime
+        value = 50, --| 0 - 100 value
+        allowedInVehicles = false, --| Enabled?
+        allowedJobs = { --| Allowed jobs
+            unemployed = true
+        },
+        vest = {
+            drawable = 15, --| Vest drawable
+            texture = 2 --| Vest texture
+        },
+        anim = {
+            dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
+            lib = 'gang_chatting_idle01' --| Lib
+        }
+    },
+
+    {
+        item = 'bulletproof_big', --| Item name
+        usetime = 15 * seconds, --| Usetime
+        value = 100, --| 0 - 100 value
+        allowedInVehicles = false, --| Enabled?
+        allowedJobs = { --| Allowed jobs
+            unemployed = true
+        },
+        vest = {
+            drawable = 15, --| Vest drawable
+            texture = 2 --| Vest texture
+        },
+        anim = {
+            dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
+            lib = 'gang_chatting_idle01' --| Lib
         }
     }
 }
 
---| Place your progressbar here
-Config.ProgressBar = function(dict, lib, value, usetime, vest)
-    if IsDuplicityVersion() then return end
-
-    ESX.Progressbar(Strings.using, usetime, {
-        FreezePlayer = true,
-        animation = {
-            type = 'anim',
-            dict = dict,
-            lib = lib
-        },
-        onFinish = function()
-            local ped = PlayerPedId()
-
-            SetPedArmour(ped, value)
-            SetPedComponentVariation(ped, 9, vest.texture, vest.secTexture, 0)
-
-            Config.Notification(nil, Strings.taken)
-    end})
-end
-
---| Place your notification here
-Config.Notification = function(source, msg)
+--| Place here your notification
+Config.Notification = function(player, msg)
     if IsDuplicityVersion() then
-        local xPlayer = ESX.GetPlayerFromId(source)
+        local xPlayer = ESX.GetPlayerFromId(player)
         xPlayer.showNotification(msg)
     else
         ESX.ShowNotification(msg)
     end
 end
 
---| Place your esx Import here
-Config.esxImport = function()
-	if IsDuplicityVersion() then
-		return exports['es_extended']:getSharedObject()
-	else
-		return exports['es_extended']:getSharedObject()
-	end
+--| Place here your punish actions
+Config.PunishPlayer = function(player, reason)
+    if not IsDuplicityVersion() then return end
+    if Webhook.Settings.punish then
+        DiscordLog(player, 'PUNISH', reason, 'punish')
+    end
+
+    DropPlayer(player, reason)
 end
 
---| Place your Register items here
-Config.RegisterItems = function()
-    if not IsDuplicityVersion() then return end
-
-    for k, data in pairs(Config.Armour) do
-        ESX.RegisterUsableItem(data.item, function(source)
-            local xPlayer = ESX.GetPlayerFromId(source)
-            xPlayer.removeInventoryItem(data.item, 1)
-            DiscordLog(source, Strings.logTitle, Strings.logDesc)
-            TriggerClientEvent('zrx_armour:client:useArmour', source, k)
-        end)
-    end
+--| Place here your esx Import
+Config.EsxImport = function()
+	if IsDuplicityVersion() then
+		return exports.es_extended:getSharedObject()
+	else
+		return exports.es_extended:getSharedObject()
+	end
 end

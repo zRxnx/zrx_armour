@@ -5,11 +5,18 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Advanced armour system'
-version '1.1.0'
+version '2.0.0'
+
+dependencies {
+    'es_extended',
+	'ox_lib',
+    'oxmysql'
+}
 
 shared_scripts {
     '@ox_lib/init.lua',
-    'configuration/*.lua'
+    'configuration/config.lua',
+    'configuration/strings.lua',
 }
 
 client_scripts {
@@ -18,10 +25,6 @@ client_scripts {
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
+    'configuration/webhook.lua',
     'server/*.lua'
-}
-
-dependencies {
-	'oxmysql',
-    'ox_lib'
 }

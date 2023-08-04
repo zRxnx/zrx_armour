@@ -1,36 +1,54 @@
-ESX = Config.esxImport()
-local hasArmour = false
+ESX, HasArmour, Component = Config.EsxImport(), false, {}
+local GetPedArmour = GetPedArmour
+local SetPedComponentVariation = SetPedComponentVariation
+local GetPedTextureVariation = GetPedTextureVariation
+local GetPedDrawableVariation = GetPedDrawableVariation
+
+RegisterNetEvent('esx:playerLoaded',function(xPlayer)
+    ESX.PlayerData = xPlayer
+end)
+
+RegisterNetEvent('esx:setJob', function(job)
+	ESX.PlayerData.job = job
+end)
 
 RegisterNetEvent('zrx_armour:client:useArmour', function(index)
-    if type(index) ~= 'number' then return end
-
     UseArmour(index)
-    hasArmour = true
 end)
 
-RegisterNetEvent('zrx_armour:client:setState', function(state)
-    hasArmour = state
-end)
+RegisterNetEvent('zrx_armour:client:setState', function(data, state)
+    if data.drawable and data.texture then
+        Component = data
+    end
 
-RegisterNetEvent('esx:onPlayerDeath', function()
-    hasArmour = false
+    HasArmour = state
 end)
 
 CreateThread(function()
     while Config.RemoveArmourOnBreak do
-        if hasArmour then
+        if HasArmour then
             if GetPedArmour(cache.ped) == 0 then
                 SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
-                hasArmour = false
+                HasArmour = false
             end
-
-            Wait(1000)
-        else
-            Wait(2000)
         end
+
+        Wait(1000)
+    end
+end)
+
+CreateThread(function()
+    while Config.ForceComponent do
+        if HasArmour then
+            if GetPedDrawableVariation(cache.ped, 9) ~= Component.drawable or GetPedTextureVariation(cache.ped, 9) ~= Component.texture then
+                SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 0)
+            end
+        end
+
+        Wait(1000)
     end
 end)
 
 exports('hasArmour', function()
-    return hasArmour
+    return HasArmour
 end)

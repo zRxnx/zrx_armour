@@ -13,7 +13,7 @@ AddEventHandler('onResourceStart', function(res)
     if res ~= curResName then return end
 
     while continueCheck do
-        PerformHttpRequest('https://github.com/zRxnx/zrx_animalstroking/releases/latest', CheckVersion, 'GET')
+        PerformHttpRequest('https://github.com/zRxnx/zrx_armour/releases/latest', CheckVersion, 'GET')
         Wait(3600000)
     end
 end)
@@ -37,7 +37,7 @@ end
 GetRepoInformations = function()
     local repoVersion, repoURL
 
-    PerformHttpRequest('https://api.github.com/repos/zRxnx/zrx_animalstroking/releases/latest', function(err, response, headers)
+    PerformHttpRequest('https://api.github.com/repos/zRxnx/zrx_armour/releases/latest', function(err, response, headers)
         if err == 200 then
             local data = json.decode(response)
 
@@ -45,7 +45,7 @@ GetRepoInformations = function()
             repoURL = data.html_url
         else
             repoVersion = curVersion
-            repoURL = 'https://github.com/zRxnx/zrx_animalstroking'
+            repoURL = 'https://github.com/zRxnx/zrx_armour'
         end
     end, 'GET')
 

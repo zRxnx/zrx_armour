@@ -1,52 +1,87 @@
-ESX = Config.esxImport()
-WEBHOOK = ''
+ESX, PLAYER_CACHE, USED, COOLDOWN = Config.EsxImport(), {}, {}, {}
+
+RegisterNetEvent('esx:playerLoaded', function(player)
+    PLAYER_CACHE[player] = GetPlayerData(player)
+    PLAYER_CACHE[player].vData = {}
+    Player.Load(player)
+end)
 
 CreateThread(function()
-	MySQL.Sync.execute(
-        'ALTER TABLE `users` ' ..
-        'ADD IF NOT EXISTS armour int(100) DEFAULT 0; '
-	)
+    MySQL.Sync.execute([[
+        CREATE Table IF NOT EXISTS `zrx_armour` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `identifier` varchar(255) DEFAULT NULL,
+            `value` int(100) DEFAULT 0,
+            `index` int(255) DEFAULT 0,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB;
+    ]])
 
-    Config.RegisterItems()
-    CheckValues()
+    for i, data in pairs(GetPlayers()) do
+        data = tonumber(data)
+        PLAYER_CACHE[data] = GetPlayerData(data)
+        PLAYER_CACHE[data].vData = {}
+        Player.Load(data)
+    end
+
+    for i, data in pairs(Config.Armour) do
+        ESX.RegisterUsableItem(data.item, function(source)
+            if Player.HasCooldown(source) then
+                return Config.Notification(source, Strings.on_cooldown)
+            end
+
+            USED[source] = true
+            PLAYER_CACHE[source].vData.index = i
+
+            if Webhook.Settings.startVest then
+                DiscordLog(source, 'START VEST', 'Player started a vest', 'startVest')
+            end
+
+            TriggerClientEvent('zrx_armour:client:useArmour', source, i)
+        end)
+    end
 end)
 
-RegisterNetEvent('esx:playerLoaded', function(player, xPlayer)
-    if not xPlayer then return end
-    player = tonumber(player)
+AddEventHandler('onResourceStop', function(res)
+    if res ~= GetCurrentResourceName() then return end
 
-    MySQL.query('SELECT `armour` FROM `users` WHERE `identifier` = ?', {
-        xPlayer.identifier
-    }, function(data)
-        local armour = tonumber(data[1].armour)
+    for i, data in pairs(GetPlayers()) do
+        data = tonumber(data)
+        Player.Save(data)
+    end
+end)
 
-        if armour > 0 then
-            local ped = GetPlayerPed(player)
+RegisterNetEvent('zrx_armour:server:useArmour', function(index)
+    if USED[source] then
+        USED[source] = false
+        local xPlayer = ESX.GetPlayerFromId(source)
 
-            SetPedArmour(ped, armour)
-            SetPedComponentVariation(ped, 9, Config.Default.vest.texture, Config.Default.vest.secTexture, 0)
-            TriggerClientEvent('zrx_armour:client:setState', player, true)
+        if Webhook.Settings.useVest then
+            DiscordLog(source, 'USE VEST', 'Player used a vest', 'useVest')
         end
-    end)
+
+        xPlayer.removeInventoryItem(Config.Armour[index].item, 1)
+    else
+        Config.PunishPlayer(source, 'Tried to trigger "zrx_armour:server:useArmour"')
+    end
 end)
 
-RegisterNetEvent('esx:onPlayerDeath', function()
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if not xPlayer then return end
+RegisterNetEvent('zrx_armour:server:cancelArmour', function()
+    if USED[source] then
+        USED[source] = false
 
-    MySQL.update.await('UPDATE `users` SET `armour` = ? WHERE `identifier` = ?', {
-        0,
-        xPlayer.identifier
-    })
+        if Webhook.Settings.cancelArmour then
+            DiscordLog(source, 'CANCEL ARMOUR', 'Player cancelled a armour', 'cancelArmour')
+        end
+    else
+        Config.PunishPlayer(source, 'Tried to trigger "zrx_armour:server:cancelArmour"')
+    end
 end)
 
-AddEventHandler('esx:playerDropped', function(source)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if not xPlayer then return end
-    local armour = GetPedArmour(GetPlayerPed(source))
+RegisterNetEvent(Config.OnPlayerDeathEvent, function()
+    Player.Reset(source)
+end)
 
-    MySQL.update.await('UPDATE `users` SET `armour` = ? WHERE `identifier` = ?', {
-        armour,
-        xPlayer.identifier
-    })
+AddEventHandler('playerDropped', function(reason)
+    Player.Save(source)
 end)
