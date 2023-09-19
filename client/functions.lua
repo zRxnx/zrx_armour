@@ -28,7 +28,8 @@ UseArmour = function(index)
         },
         anim = {
             dict = data.anim.dict,
-            clip = data.anim.lib
+            clip = data.anim.lib,
+            flag = data.anim.flag
         },
     })
 

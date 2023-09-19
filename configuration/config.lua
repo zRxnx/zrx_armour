@@ -23,7 +23,8 @@ Config.Armour = {
         },
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
-            lib = 'gang_chatting_idle01' --| Lib
+            lib = 'gang_chatting_idle01', --| Lib
+            flag = 1 --| 1 Full body - 16 Upper body
         }
     },
 
@@ -41,7 +42,8 @@ Config.Armour = {
         },
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
-            lib = 'gang_chatting_idle01' --| Lib
+            lib = 'gang_chatting_idle01', --| Lib
+            flag = 1 --| 1 Full body - 16 Upper body
         }
     },
 
@@ -59,7 +61,8 @@ Config.Armour = {
         },
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
-            lib = 'gang_chatting_idle01' --| Lib
+            lib = 'gang_chatting_idle01', --| Lib
+            flag = 1 --| 1 Full body - 16 Upper body
         }
     }
 }
