@@ -3,6 +3,7 @@ local GetPedArmour = GetPedArmour
 local SetPedComponentVariation = SetPedComponentVariation
 local GetPedTextureVariation = GetPedTextureVariation
 local GetPedDrawableVariation = GetPedDrawableVariation
+local Wait = Wait
 
 RegisterNetEvent('esx:playerLoaded',function(xPlayer)
     ESX.PlayerData = xPlayer

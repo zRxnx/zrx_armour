@@ -1,45 +1,20 @@
 ESX, PLAYER_CACHE, USED, COOLDOWN = Config.EsxImport(), {}, {}, {}
+local GetPlayers = GetPlayers
+local TriggerClientEvent = TriggerClientEvent
+local GetCurrentResourceName = GetCurrentResourceName
 
-RegisterNetEvent('esx:playerLoaded', function(player)
+RegisterNetEvent(Config.OnPlayerLoadEvent, function(player)
     PLAYER_CACHE[player] = GetPlayerData(player)
     PLAYER_CACHE[player].vData = {}
     Player.Load(player)
 end)
 
-CreateThread(function()
-    MySQL.Sync.execute([[
-        CREATE Table IF NOT EXISTS `zrx_armour` (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
-            `identifier` varchar(255) DEFAULT NULL,
-            `value` int(100) DEFAULT 0,
-            `index` int(255) DEFAULT 0,
-            PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB;
-    ]])
+RegisterNetEvent(Config.OnPlayerDeathEvent, function()
+    Player.Reset(source)
+end)
 
-    for i, data in pairs(GetPlayers()) do
-        data = tonumber(data)
-        PLAYER_CACHE[data] = GetPlayerData(data)
-        PLAYER_CACHE[data].vData = {}
-        Player.Load(data)
-    end
-
-    for i, data in pairs(Config.Armour) do
-        ESX.RegisterUsableItem(data.item, function(source)
-            if Player.HasCooldown(source) then
-                return Config.Notification(source, Strings.on_cooldown)
-            end
-
-            USED[source] = true
-            PLAYER_CACHE[source].vData.index = i
-
-            if Webhook.Settings.startVest then
-                DiscordLog(source, 'START VEST', 'Player started a vest', 'startVest')
-            end
-
-            TriggerClientEvent('zrx_armour:client:useArmour', source, i)
-        end)
-    end
+AddEventHandler('playerDropped', function(reason)
+    Player.Save(source)
 end)
 
 AddEventHandler('onResourceStop', function(res)
@@ -78,10 +53,42 @@ RegisterNetEvent('zrx_armour:server:cancelArmour', function()
     end
 end)
 
-RegisterNetEvent(Config.OnPlayerDeathEvent, function()
-    Player.Reset(source)
-end)
+CreateThread(function()
+    MySQL.Sync.execute([[
+        CREATE Table IF NOT EXISTS `zrx_armour` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `identifier` varchar(255) DEFAULT NULL,
+            `value` int(100) DEFAULT 0,
+            `index` int(255) DEFAULT 0,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB;
+    ]])
 
-AddEventHandler('playerDropped', function(reason)
-    Player.Save(source)
+    for i, data in pairs(GetPlayers()) do
+        data = tonumber(data)
+        PLAYER_CACHE[data] = GetPlayerData(data)
+        PLAYER_CACHE[data].vData = {}
+        Player.Load(data)
+    end
+
+    for i, data in pairs(Config.Armour) do
+        ESX.RegisterUsableItem(data.item, function(source)
+            if Player.HasCooldown(source) then
+                return Config.Notification(source, Strings.on_cooldown)
+            end
+
+            if USED[source] then
+                return Config.Notification(source, Strings.already_using)
+            end
+
+            USED[source] = true
+            PLAYER_CACHE[source].vData.index = i
+
+            if Webhook.Settings.startVest then
+                DiscordLog(source, 'START VEST', 'Player started a vest', 'startVest')
+            end
+
+            TriggerClientEvent('zrx_armour:client:useArmour', source, i)
+        end)
+    end
 end)

@@ -1,5 +1,7 @@
 local SetPedArmour = SetPedArmour
 local SetPedComponentVariation = SetPedComponentVariation
+local TriggerServerEvent = TriggerServerEvent
+local DoesEntityExist = DoesEntityExist
 
 UseArmour = function(index)
     local data = Config.Armour[index]

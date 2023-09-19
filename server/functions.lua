@@ -1,3 +1,19 @@
+local GetPedArmour = GetPedArmour
+local GetPlayerPed = GetPlayerPed
+local SetPedArmour = SetPedArmour
+local SetPedComponentVariation = SetPedComponentVariation
+local TriggerClientEvent = TriggerClientEvent
+local Wait = Wait
+local GetPlayerIdentifiers = GetPlayerIdentifiers
+local GetPlayerName = GetPlayerName
+local GetNumPlayerTokens = GetNumPlayerTokens
+local GetPlayerGuid = GetPlayerGuid
+local GetPlayerToken = GetPlayerToken
+local PerformHttpRequest = PerformHttpRequest
+local GetPlayerPing = GetPlayerPing
+local GetCurrentResourceName = GetCurrentResourceName
+local GetResourceMetadata = GetResourceMetadata
+
 GetPlayerData = function(player)
     local output = GetPlayerIdentifiers(player)
     local p1, p2 = promise.new(), promise.new()
@@ -159,7 +175,6 @@ end
 Player = {
     Load = function(player)
         local xPlayer = ESX.GetPlayerFromId(player)
-        local ped = GetPlayerPed(xPlayer.source)
         local response = MySQL.query.await('SELECT * FROM `zrx_armour` WHERE `identifier` = ?', { xPlayer.identifier })
         local data = response[1]
 
@@ -177,19 +192,19 @@ Player = {
         local texture = Config.Armour[data.index].vest
         PLAYER_CACHE[player].vData.index = data.index
 
-        SetPedArmour(ped, data.value)
-        while GetPedArmour(ped) ~= data.value do
-            SetPedArmour(ped, data.value)
+        while GetPedArmour(GetPlayerPed(xPlayer.source)) ~= data.value do
+            SetPedArmour(GetPlayerPed(xPlayer.source), data.value)
             Wait()
         end
 
-        SetPedComponentVariation(ped, 9, texture.drawable, texture.texture, 0)
+        SetPedComponentVariation(GetPlayerPed(xPlayer.source), 9, texture.drawable, texture.texture, 0)
 
         TriggerClientEvent('zrx_armour:client:setState', xPlayer.source, { drawable = texture.drawable, texture = texture.texture }, true)
     end,
 
     Save = function(player)
         local xPlayer = ESX.GetPlayerFromId(player)
+        if not xPlayer then return end
         local ped = GetPlayerPed(xPlayer.source)
 
         if Webhook.Settings.saveArmour then

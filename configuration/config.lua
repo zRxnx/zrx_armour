@@ -6,6 +6,7 @@ Config.ForceComponent = true --| Reset player component while armour active
 Config.LoadAndSaveArmour = true --| Save armour in database?
 Config.Cooldown = 60 --| In seconds
 Config.OnPlayerDeathEvent = 'esx:onPlayerDeath' --| Event listener
+Config.OnPlayerLoadEvent = 'esx:playerLoaded' --| First parameter needs the player id
 
 Config.Armour = {
     {

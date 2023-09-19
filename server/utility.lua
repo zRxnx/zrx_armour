@@ -1,3 +1,5 @@
+local PerformHttpRequest = PerformHttpRequest
+local Wait = Wait
 local curResName = GetCurrentResourceName()
 local curVersion = GetResourceMetadata(curResName, 'version')
 local resourceName = 'zrx_armour'
@@ -7,10 +9,6 @@ CreateThread(function()
     if curResName ~= 'zrx_armour' then
         resourceName = ('zrx_armour (%s)'):format(curResName)
     end
-end)
-
-AddEventHandler('onResourceStart', function(res)
-    if res ~= curResName then return end
 
     while continueCheck do
         PerformHttpRequest('https://github.com/zRxnx/zrx_armour/releases/latest', CheckVersion, 'GET')
@@ -18,20 +16,18 @@ AddEventHandler('onResourceStart', function(res)
     end
 end)
 
-CheckVersion = function(err, responseText, headers)
+CheckVersion = function()
     local repoVersion, repoURL = GetRepoInformations()
 
-    CreateThread(function()
-        if curVersion ~= repoVersion then
-            print(('^0[^3WARNING^0] %s is ^1NOT ^0up to date!'):format(resourceName))
-            print(('^0[^3WARNING^0] Your Version: ^2%s^0'):format(curVersion))
-            print(('^0[^3WARNING^0] Latest Version: ^2%s^0'):format(repoVersion))
-            print(('^0[^3WARNING^0] Get the latest Version from: ^2%s^0'):format(repoURL))
-        else
-            print(('^0[^2INFO^0] %s is up to date! (^2%s^0)'):format(resourceName, curVersion))
-            continueCheck = false
-        end
-    end)
+    if curVersion ~= repoVersion then
+        print(('^0[^3WARNING^0] %s is ^1NOT ^0up to date!'):format(resourceName))
+        print(('^0[^3WARNING^0] Your Version: ^2%s^0'):format(curVersion))
+        print(('^0[^3WARNING^0] Latest Version: ^2%s^0'):format(repoVersion))
+        print(('^0[^3WARNING^0] Get the latest Version from: ^2%s^0'):format(repoURL))
+    else
+        print(('^0[^2INFO^0] %s is up to date! (^2%s^0)'):format(resourceName, curVersion))
+        continueCheck = false
+    end
 end
 
 GetRepoInformations = function()
