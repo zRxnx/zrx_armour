@@ -5,7 +5,7 @@ local GetPedTextureVariation = GetPedTextureVariation
 local GetPedDrawableVariation = GetPedDrawableVariation
 local Wait = Wait
 
-RegisterNetEvent('esx:playerLoaded',function(xPlayer)
+RegisterNetEvent('esx:playerLoaded', function(xPlayer)
     ESX.PlayerData = xPlayer
 end)
 

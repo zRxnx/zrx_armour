@@ -59,7 +59,8 @@ CreateThread(function()
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `identifier` varchar(255) DEFAULT NULL,
             `value` int(100) DEFAULT 0,
-            `index` int(255) DEFAULT 0,
+            `drawable` varchar(255) DEFAULT 0,
+            `texture` varchar(255) DEFAULT 0,
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB;
     ]])
@@ -82,7 +83,8 @@ CreateThread(function()
             end
 
             USED[source] = true
-            PLAYER_CACHE[source].vData.index = i
+            PLAYER_CACHE[source].vData.drawable = data.vest.drawable
+            PLAYER_CACHE[source].vData.texture = data.vest.texture
 
             if Webhook.Settings.startVest then
                 DiscordLog(source, 'START VEST', 'Player started a vest', 'startVest')
