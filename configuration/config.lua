@@ -11,15 +11,22 @@ Config.OnPlayerLoadEvent = 'esx:playerLoaded' --| First parameter needs the play
 Config.Armour = {
     {
         item = 'bulletproof_small', --| Item name
-        usetime = 10 * seconds, --| Usetime
+        usetime = 3 * seconds, --| Usetime
         value = 25, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
         vest = {
-            drawable = 15, --| Vest drawable
-            texture = 2 --| Vest texture
+            female = {
+                drawable = 10, --| Vest drawable
+                texture = 0 --| Vest texture
+            },
+
+            male = {
+                drawable = 10, --| Vest drawable
+                texture = 0 --| Vest texture
+            }
         },
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
@@ -30,15 +37,22 @@ Config.Armour = {
 
     {
         item = 'bulletproof_medium', --| Item name
-        usetime = 15 * seconds, --| Usetime
+        usetime = 3 * seconds, --| Usetime
         value = 50, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
         vest = {
-            drawable = 15, --| Vest drawable
-            texture = 2 --| Vest texture
+            female = {
+                drawable = 10, --| Vest drawable
+                texture = 1 --| Vest texture
+            },
+
+            male = {
+                drawable = 10, --| Vest drawable
+                texture = 1 --| Vest texture
+            }
         },
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
@@ -49,15 +63,22 @@ Config.Armour = {
 
     {
         item = 'bulletproof_big', --| Item name
-        usetime = 15 * seconds, --| Usetime
+        usetime = 3 * seconds, --| Usetime
         value = 100, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
         vest = {
-            drawable = 15, --| Vest drawable
-            texture = 2 --| Vest texture
+            female = {
+                drawable = 10, --| Vest drawable
+                texture = 2 --| Vest texture
+            },
+
+            male = {
+                drawable = 10, --| Vest drawable
+                texture = 2 --| Vest texture
+            }
         },
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict

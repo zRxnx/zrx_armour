@@ -18,7 +18,7 @@ RegisterNetEvent('zrx_armour:client:useArmour', function(index)
 end)
 
 RegisterNetEvent('zrx_armour:client:setState', function(data, state)
-    if data.drawable and data.texture then
+    if data?.drawable and data?.texture then
         Component = data
     end
 

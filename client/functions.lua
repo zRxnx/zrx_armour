@@ -2,6 +2,7 @@ local SetPedArmour = SetPedArmour
 local SetPedComponentVariation = SetPedComponentVariation
 local TriggerServerEvent = TriggerServerEvent
 local DoesEntityExist = DoesEntityExist
+local IsPedMale = IsPedMale
 
 UseArmour = function(index)
     local data = Config.Armour[index]
@@ -33,8 +34,13 @@ UseArmour = function(index)
         },
     })
 
+    if IsPedMale(cache.ped) then
+        Component = { drawable = data.vest.male.drawable, texture = data.vest.male.texture }
+    else
+        Component = { drawable = data.vest.female.drawable, texture = data.vest.female.texture }
+    end
+
     HasArmour = true
-    Component = { drawable = data.vest.drawable, texture = data.vest.texture }
     SetPedArmour(cache.ped, data.value)
     SetPedComponentVariation(cache.ped, 9, data.vest.drawable, data.vest.texture, 0)
 

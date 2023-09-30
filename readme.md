@@ -22,6 +22,7 @@ This is an advanced armour system for fivem
 ### Exports
 
 - hasArmour (client)
+- hasCooldown (server)
 
 ## Requirements
 

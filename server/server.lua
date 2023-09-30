@@ -74,6 +74,8 @@ CreateThread(function()
 
     for i, data in pairs(Config.Armour) do
         ESX.RegisterUsableItem(data.item, function(source)
+            local xPlayer = ESX.GetPlayerFromId(source)
+
             if Player.HasCooldown(source) then
                 return Config.Notification(source, Strings.on_cooldown)
             end
@@ -83,8 +85,13 @@ CreateThread(function()
             end
 
             USED[source] = true
-            PLAYER_CACHE[source].vData.drawable = data.vest.drawable
-            PLAYER_CACHE[source].vData.texture = data.vest.texture
+            if xPlayer.variables.sex == 'm' then
+                PLAYER_CACHE[source].vData.drawable = data.vest.male.drawable
+                PLAYER_CACHE[source].vData.texture = data.vest.male.texture
+            else
+                PLAYER_CACHE[source].vData.drawable = data.vest.female.drawable
+                PLAYER_CACHE[source].vData.texture = data.vest.female.texture
+            end
 
             if Webhook.Settings.startVest then
                 DiscordLog(source, 'START VEST', 'Player started a vest', 'startVest')
@@ -93,4 +100,8 @@ CreateThread(function()
             TriggerClientEvent('zrx_armour:client:useArmour', source, i)
         end)
     end
+end)
+
+exports('hasCooldown', function(player)
+    return not not COOLDOWN[PLAYER_CACHE[player].license]
 end)
