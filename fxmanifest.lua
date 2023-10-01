@@ -5,7 +5,7 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Advanced armour system'
-version '2.2.1'
+version '2.2.2'
 
 dependencies {
     'es_extended',
