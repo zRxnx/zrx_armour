@@ -190,12 +190,14 @@ Player = {
             DiscordLog(xPlayer.source, 'SAVE ARMOUR', 'Saved armour of player', 'saveArmour')
         end
 
-        MySQL.update.await('UPDATE `zrx_armour` SET `value` = ?, `drawable` = ?, `texture` = ? WHERE identifier = ?', {
-            GetPedArmour(ped),
-            PLAYER_CACHE[xPlayer.source].vData.drawable,
-            PLAYER_CACHE[xPlayer.source].vData.texture,
-            xPlayer.identifier
-        })
+        if PLAYER_CACHE[xPlayer.source].vData?.drawable and PLAYER_CACHE[xPlayer.source].vData?.texture then
+            MySQL.update.await('UPDATE `zrx_armour` SET `value` = ?, `drawable` = ?, `texture` = ? WHERE identifier = ?', {
+                GetPedArmour(ped),
+                PLAYER_CACHE[xPlayer.source].vData.drawable,
+                PLAYER_CACHE[xPlayer.source].vData.texture,
+                xPlayer.identifier
+            })
+        end
     end,
 
     Reset = function(player)
