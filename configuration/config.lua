@@ -1,12 +1,13 @@
 local seconds, minutes = 1000, 60000
 Config = {}
 
+Config.CheckForUpdates = true --| Check for updates?
 Config.RemoveArmourOnBreak = true --| Should the vest be removed after no more armour
 Config.ForceComponent = true --| Reset player component while armour active
 Config.LoadAndSaveArmour = true --| Save armour in database?
 Config.Cooldown = 60 --| In seconds
-Config.OnPlayerDeathEvent = 'esx:onPlayerDeath' --| Event listener
-Config.OnPlayerLoadEvent = 'esx:playerLoaded' --| First parameter needs the player id
+Config.OnPlayerDeathEvent = 'zrx_utility:bridge:onPlayerDeath' --| Event listener
+Config.OnPlayerLoadEvent = 'zrx_utility:bridge:playerLoaded' --| First parameter needs the player id
 
 Config.Armour = {
     {

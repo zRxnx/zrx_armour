@@ -1,17 +1,10 @@
-ESX, HasArmour, Component = Config.EsxImport(), false, {}
+CORE = exports.zrx_utility:GetUtility()
+HasArmour, Component = false, {}
 local GetPedArmour = GetPedArmour
 local SetPedComponentVariation = SetPedComponentVariation
 local GetPedTextureVariation = GetPedTextureVariation
 local GetPedDrawableVariation = GetPedDrawableVariation
 local Wait = Wait
-
-RegisterNetEvent('esx:playerLoaded', function(xPlayer)
-    ESX.PlayerData = xPlayer
-end)
-
-RegisterNetEvent('esx:setJob', function(job)
-	ESX.PlayerData.job = job
-end)
 
 RegisterNetEvent('zrx_armour:client:useArmour', function(index)
     UseArmour(index)

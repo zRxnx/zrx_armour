@@ -9,12 +9,12 @@ UseArmour = function(index)
 
     if not data.allowedInVehicles and DoesEntityExist(cache.vehicle) then
         TriggerServerEvent('zrx_armour:server:cancelArmour')
-        return Config.Notification(nil, Strings.in_vehicle)
+        return CORE.Bridge.notification(Strings.in_vehicle)
     end
 
-    if data.allowedJobs and not data.allowedJobs[ESX.PlayerData.job.name] then
+    if data.allowedJobs and not data.allowedJobs[CORE.Bridge.getVariables().job.name] then
         TriggerServerEvent('zrx_armour:server:cancelArmour')
-        return Config.Notification(nil, Strings.not_permitted)
+        return CORE.Bridge.notification(Strings.not_permitted)
     end
 
     lib.progressBar({
@@ -44,6 +44,6 @@ UseArmour = function(index)
     SetPedArmour(cache.ped, data.value)
     SetPedComponentVariation(cache.ped, 9, data.vest.drawable, data.vest.texture, 0)
 
-    Config.Notification(nil, Strings.taken)
+    CORE.Bridge.notification(Strings.taken)
     TriggerServerEvent('zrx_armour:server:useArmour', index)
 end
