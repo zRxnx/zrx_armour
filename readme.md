@@ -22,17 +22,18 @@ This is an advanced armour system for fivem
 ### Exports
 
 - hasArmour (client)
+- displayArmour (client)
 - hasCooldown (server)
 
 ## Requirements
 
-- es_extended (> 1.6.0)
+- zrx_utility (latest)
 - ox_lib (latest)
 - oxmysql (latest)
 
 ## Preview
 
-![Discord Log](https://i.imgur.com/S8Hvzl3.png)
+![Discord Log](https://i.imgur.com/TDfftS2.png)
 
 ## Installation
 

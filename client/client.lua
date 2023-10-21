@@ -1,17 +1,10 @@
-ESX, HasArmour, Component = Config.EsxImport(), false, {}
+CORE = exports.zrx_utility:GetUtility()
+HasArmour, DisplayArmour, Component = false, true, {}
 local GetPedArmour = GetPedArmour
 local SetPedComponentVariation = SetPedComponentVariation
 local GetPedTextureVariation = GetPedTextureVariation
 local GetPedDrawableVariation = GetPedDrawableVariation
 local Wait = Wait
-
-RegisterNetEvent('esx:playerLoaded', function(xPlayer)
-    ESX.PlayerData = xPlayer
-end)
-
-RegisterNetEvent('esx:setJob', function(job)
-	ESX.PlayerData.job = job
-end)
 
 RegisterNetEvent('zrx_armour:client:useArmour', function(index)
     UseArmour(index)
@@ -40,7 +33,7 @@ end)
 
 CreateThread(function()
     while Config.ForceComponent do
-        if HasArmour then
+        if HasArmour and DisplayArmour then
             if GetPedDrawableVariation(cache.ped, 9) ~= Component.drawable or GetPedTextureVariation(cache.ped, 9) ~= Component.texture then
                 SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 0)
             end
@@ -52,4 +45,8 @@ end)
 
 exports('hasArmour', function()
     return HasArmour
+end)
+
+exports('displayArmour', function(bool)
+    DisplayArmour = bool
 end)
