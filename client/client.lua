@@ -35,7 +35,7 @@ CreateThread(function()
     while Config.ForceComponent do
         if HasArmour and DisplayArmour then
             if GetPedDrawableVariation(cache.ped, 9) ~= Component.drawable or GetPedTextureVariation(cache.ped, 9) ~= Component.texture then
-                SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 0)
+                SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 2)
             end
         end
 

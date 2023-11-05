@@ -26,6 +26,9 @@ Player = {
             return
         end
 
+        data.drawable = tonumber(data.drawable)
+        data.texture = tonumber(data.texture)
+
         PLAYER_CACHE[xPlayer.player].vData.drawable = data.drawable
         PLAYER_CACHE[xPlayer.player].vData.texture = data.texture
 
