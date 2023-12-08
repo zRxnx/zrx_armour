@@ -128,6 +128,18 @@ CreateThread(function()
     end
 end)
 
+ESX.RegisterServerCallback(GetCurrentResourceName().. ":Server:GetGender", function(source, cb)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    local result = MySQL.single.await("SELECT sex FROM users WHERE identifier = ?", {xPlayer.identifier})
+
+    if result then
+        return cb(result.sex)
+    else
+        print("Die Spalte 'SEX' für den Spieler ".. xPlayer.identifier .." konnte nicht abgerufen werden.")
+        return cb(false)
+    end
+end)
+
 exports('hasCooldown', function(player)
     return not not COOLDOWN[PLAYER_CACHE[player].license]
 end)
