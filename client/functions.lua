@@ -1,3 +1,5 @@
+ESX = exports.es_extended:getSharedObject()
+
 local SetPedArmour = SetPedArmour
 local SetPedComponentVariation = SetPedComponentVariation
 local TriggerServerEvent = TriggerServerEvent
@@ -34,16 +36,20 @@ UseArmour = function(index)
         },
     })
 
-    if IsPedMale(cache.ped) then
-        Component = { drawable = data.vest.male.drawable, texture = data.vest.male.texture }
-    else
-        Component = { drawable = data.vest.female.drawable, texture = data.vest.female.texture }
-    end
+    ESX.TriggerServerCallback(GetCurrentResourceName()..":Server:GetGender", function(result)
+        if result then
+            if result == "f" then
+                Component = { drawable = data.vest.female.drawable, texture = data.vest.female.texture }
+            else
+                Component = { drawable = data.vest.male.drawable, texture = data.vest.male.texture }
+            end
 
-    HasArmour = true
-    SetPedArmour(cache.ped, data.value)
-    SetPedComponentVariation(cache.ped, 9, data.vest.drawable, data.vest.texture, 0)
+            HasArmour = true
+            SetPedArmour(cache.ped, data.value)
+            SetPedComponentVariation(cache.ped, 9, data.vest.drawable, data.vest.texture, 0)
 
-    CORE.Bridge.notification(Strings.taken)
-    TriggerServerEvent('zrx_armour:server:useArmour', index)
+            CORE.Bridge.notification(Strings.taken)
+            TriggerServerEvent('zrx_armour:server:useArmour', index)
+        end
+    end)
 end
