@@ -1,5 +1,7 @@
+---@diagnostic disable: need-check-nil, cast-local-type
 CORE = exports.zrx_utility:GetUtility()
-PLAYER_CACHE, USED, COOLDOWN = {}, {}, {}
+OX_INV = exports?.ox_inventory
+PLAYER_CACHE, USED, COOLDOWN, CURRENT = {}, {}, {}, 1
 local GetPlayers = GetPlayers
 local TriggerClientEvent = TriggerClientEvent
 local GetCurrentResourceName = GetCurrentResourceName
@@ -31,6 +33,7 @@ end)
 RegisterNetEvent('zrx_armour:server:useArmour', function(index)
     if USED[source] then
         USED[source] = false
+        CURRENT = index
 
         if Webhook.Links.useArmour:len() > 0 then
             local message = ([[
@@ -66,6 +69,27 @@ RegisterNetEvent('zrx_armour:server:cancelArmour', function()
     end
 end)
 
+if Config.Inventory == 'ox' and Config.TakeBack then
+    RegisterCommand(Config.TakeBack.command, function(source)
+        local ped = GetPlayerPed(source)
+        local armour = GetPedArmour(ped)
+
+        if armour == 0 then
+            return CORE.Bridge.notification(source, Strings.no_armour)
+        end
+
+        local response = lib.callback.await('zrx_armour:client:awaitState', source)
+
+        if not response then
+            return
+        end
+
+        Player.Reset(source)
+        OX_INV:AddItem(source, Config.Armour[CURRENT].item, 1, { value = armour, description = Strings.value:format(armour) })
+        CORE.Bridge.notification(source, Strings.taken_off)
+    end)
+end
+
 CreateThread(function()
     if Config.CheckForUpdates then
         CORE.Server.CheckVersion('zrx_armour')
@@ -90,25 +114,43 @@ CreateThread(function()
         Player.Load(player)
     end
 
-    for i, data in pairs(Config.Armour) do
-        CORE.Bridge.registerUsableItem(data.item, function(source)
-            local xPlayer = CORE.Bridge.getVariables(source)
+    if Config.Inventory == 'ox' then
+        exports('useItem', function(event, item, inventory, slot)
+            if event ~= 'usingItem' then return end
+            local index = 0
 
-            if Player.HasCooldown(source) then
-                return CORE.Bridge.notification(source, Strings.on_cooldown)
+            for k, data in pairs(Config.Armour) do
+                index = item.name == data.item and k or 0
+
+                if index > 0 then
+                    break
+                end
             end
 
-            if USED[source] then
-                return CORE.Bridge.notification(source, Strings.already_using)
+            if index == 0 then
+                return
             end
 
-            USED[source] = true
+            local xPlayer = CORE.Bridge.getVariables(inventory.player.source)
+            item = OX_INV:GetSlot(inventory.player.source, slot)
+
+            if Player.HasCooldown(inventory.player.source) then
+                CORE.Bridge.notification(inventory.player.source, Strings.on_cooldown)
+                return false
+            end
+
+            if USED[inventory.player.source] then
+                CORE.Bridge.notification(inventory.player.source, Strings.already_using)
+                return false
+            end
+
+            USED[inventory.player.source] = true
             if xPlayer.sex == 'm' then
-                PLAYER_CACHE[source].vData.drawable = data.vest.male.drawable
-                PLAYER_CACHE[source].vData.texture = data.vest.male.texture
+                PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.male.drawable
+                PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.male.texture
             else
-                PLAYER_CACHE[source].vData.drawable = data.vest.female.drawable
-                PLAYER_CACHE[source].vData.texture = data.vest.female.texture
+                PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.female.drawable
+                PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.female.texture
             end
 
             if Webhook.Links.startArmour:len() > 0 then
@@ -118,13 +160,82 @@ CreateThread(function()
                     Item: **%s**
                     Value: **%s**
                     Index: **%s**
-                ]]):format(data.item, data.value, i)
+                ]]):format(item.name, item.metadata.value, index)
 
-                CORE.Server.DiscordLog(source, 'START ARMOUR', message, Webhook.Links.startArmour)
+                CORE.Server.DiscordLog(inventory.player.source, 'START ARMOUR', message, Webhook.Links.startArmour)
             end
 
-            TriggerClientEvent('zrx_armour:client:useArmour', source, i)
+            TriggerClientEvent('zrx_armour:client:useArmour', inventory.player.source, index, item.metadata.value)
+
+            return false
         end)
+    else
+        for i, data in pairs(Config.Armour) do
+            CORE.Bridge.registerUsableItem(data.item, function(source)
+                local xPlayer = CORE.Bridge.getVariables(source)
+
+                if Player.HasCooldown(source) then
+                    return CORE.Bridge.notification(source, Strings.on_cooldown)
+                end
+
+                if USED[source] then
+                    return CORE.Bridge.notification(source, Strings.already_using)
+                end
+
+                USED[source] = true
+                if xPlayer.sex == 'm' then
+                    PLAYER_CACHE[source].vData.drawable = data.vest.male.drawable
+                    PLAYER_CACHE[source].vData.texture = data.vest.male.texture
+                else
+                    PLAYER_CACHE[source].vData.drawable = data.vest.female.drawable
+                    PLAYER_CACHE[source].vData.texture = data.vest.female.texture
+                end
+
+                if Webhook.Links.startArmour:len() > 0 then
+                    local message = ([[
+                        The player started a armour
+            
+                        Item: **%s**
+                        Value: **%s**
+                        Index: **%s**
+                    ]]):format(data.item, data.value, i)
+
+                    CORE.Server.DiscordLog(source, 'START ARMOUR', message, Webhook.Links.startArmour)
+                end
+
+                TriggerClientEvent('zrx_armour:client:useArmour', source, i, data.value)
+            end)
+        end
+    end
+
+    if Config.Inventory == 'ox' then
+        OX_INV:registerHook('createItem', function(payload)
+            local index = 0
+
+            for k, data in pairs(Config.Armour) do
+                index = payload.item.name == data.item and k or 0
+
+                if index > 0 then
+                    break
+                end
+            end
+
+            if index == 0 then
+                return
+            end
+
+            local metadata = payload.metadata
+
+            if not metadata.value then
+                metadata.value = Config.Armour[index].value
+                metadata.index = index
+                metadata.description = Strings.value:format(metadata.value)
+            end
+
+            return metadata
+        end, {
+            print = false,
+        })
     end
 end)
 

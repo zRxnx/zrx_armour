@@ -6,8 +6,8 @@ local GetPedTextureVariation = GetPedTextureVariation
 local GetPedDrawableVariation = GetPedDrawableVariation
 local Wait = Wait
 
-RegisterNetEvent('zrx_armour:client:useArmour', function(index)
-    UseArmour(index)
+RegisterNetEvent('zrx_armour:client:useArmour', function(index, value)
+    UseArmour(index, value)
 end)
 
 RegisterNetEvent('zrx_armour:client:setState', function(data, state)
@@ -22,8 +22,9 @@ CreateThread(function()
     while Config.RemoveArmourOnBreak do
         if HasArmour then
             if GetPedArmour(cache.ped) == 0 then
-                SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
                 HasArmour = false
+                SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
+                CORE.Bridge.notification(Strings.broke)
             end
         end
 
@@ -41,6 +42,31 @@ CreateThread(function()
 
         Wait(1000)
     end
+end)
+
+lib.callback.register('zrx_armour:client:awaitState', function()
+    local state = lib.progressBar({
+        duration = Config.TakeBack.usetime,
+        label = Strings.using,
+        useWhileDead = false,
+        canCancel = true,
+        disable = Config.TakeBack.disable,
+        anim = {
+            dict = Config.TakeBack.anim.dict,
+            clip = Config.TakeBack.anim.lib,
+            flag = Config.TakeBack.anim.flag
+        },
+    })
+
+    if not state then
+        return false
+    end
+
+    HasArmour = false
+    SetPedArmour(cache.ped, 0)
+    SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
+
+    return true
 end)
 
 exports('hasArmour', function()

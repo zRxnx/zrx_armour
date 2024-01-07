@@ -4,7 +4,7 @@ local TriggerServerEvent = TriggerServerEvent
 local DoesEntityExist = DoesEntityExist
 local IsPedMale = IsPedMale
 
-UseArmour = function(index)
+UseArmour = function(index, value)
     local data = Config.Armour[index]
 
     if not data.allowedInVehicles and DoesEntityExist(cache.vehicle) then
@@ -17,16 +17,12 @@ UseArmour = function(index)
         return CORE.Bridge.notification(Strings.not_permitted)
     end
 
-    lib.progressBar({
+    local response = lib.progressBar({
         duration = data.usetime,
         label = Strings.using,
         useWhileDead = false,
-        canCancel = false,
-        disable = {
-            car = true,
-            move = true,
-            combat = true
-        },
+        canCancel = true,
+        disable = data.disable,
         anim = {
             dict = data.anim.dict,
             clip = data.anim.lib,
@@ -34,16 +30,21 @@ UseArmour = function(index)
         },
     })
 
+    if not response then
+        return
+    end
+
     if IsPedMale(cache.ped) then
         Component = { drawable = data.vest.male.drawable, texture = data.vest.male.texture }
     else
         Component = { drawable = data.vest.female.drawable, texture = data.vest.female.texture }
     end
 
-    HasArmour = true
-    SetPedArmour(cache.ped, data.value)
+    SetPedArmour(cache.ped, value)
     SetPedComponentVariation(cache.ped, 9, data.vest.drawable, data.vest.texture, 0)
 
     CORE.Bridge.notification(Strings.taken)
     TriggerServerEvent('zrx_armour:server:useArmour', index)
+
+    HasArmour = true
 end

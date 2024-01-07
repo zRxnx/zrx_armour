@@ -6,6 +6,7 @@ This is an advanced armour system for fivem
 
 ### Features
 
+- Extendable vest with saved data
 - Item based
 - Save armour after leave
 - Remove vest after no armour

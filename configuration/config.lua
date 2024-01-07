@@ -8,6 +8,25 @@ Config.LoadAndSaveArmour = true --| Save armour in database?
 Config.Cooldown = 60 --| In seconds
 Config.OnPlayerDeathEvent = 'zrx_utility:bridge:onPlayerDeath' --| Event listener
 Config.OnPlayerLoadEvent = 'zrx_utility:bridge:playerLoaded' --| First parameter needs the player id
+Config.Inventory = 'ox' --| ox or default
+
+Config.TakeBack = { --| Command to take your current equipped armour back to the inv
+    enabled = true, --| Only supports ox inv
+
+    command = 'takearmour',
+    usetime = 3 * seconds,
+    anim = {
+        dict = 'clothingtie', --| Dict
+        lib = 'try_tie_negative_a', --| Lib
+        flag = 1 --| 1 Full body - 16 Upper body
+    },
+
+    disable = {
+        car = true,
+        move = true,
+        combat = true
+    },
+}
 
 Config.Armour = {
     {
@@ -18,6 +37,7 @@ Config.Armour = {
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
+
         vest = {
             female = {
                 drawable = 10, --| Vest drawable
@@ -29,11 +49,18 @@ Config.Armour = {
                 texture = 0 --| Vest texture
             }
         },
+
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
             lib = 'gang_chatting_idle01', --| Lib
             flag = 1 --| 1 Full body - 16 Upper body
-        }
+        },
+
+        disable = {
+            car = true,
+            move = true,
+            combat = true
+        },
     },
 
     {
@@ -44,6 +71,7 @@ Config.Armour = {
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
+
         vest = {
             female = {
                 drawable = 10, --| Vest drawable
@@ -55,11 +83,18 @@ Config.Armour = {
                 texture = 1 --| Vest texture
             }
         },
+
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
             lib = 'gang_chatting_idle01', --| Lib
             flag = 1 --| 1 Full body - 16 Upper body
-        }
+        },
+
+        disable = {
+            car = true,
+            move = true,
+            combat = true
+        },
     },
 
     {
@@ -70,6 +105,7 @@ Config.Armour = {
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
+
         vest = {
             female = {
                 drawable = 10, --| Vest drawable
@@ -81,11 +117,18 @@ Config.Armour = {
                 texture = 2 --| Vest texture
             }
         },
+
         anim = {
             dict = 'anim@heists@narcotics@funding@gang_idle', --| Dict
             lib = 'gang_chatting_idle01', --| Lib
             flag = 1 --| 1 Full body - 16 Upper body
-        }
+        },
+
+        disable = {
+            car = true,
+            move = true,
+            combat = true
+        },
     }
 }
 

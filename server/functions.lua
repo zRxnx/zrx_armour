@@ -22,7 +22,7 @@ Player = {
         if not data then
             MySQL.insert.await('INSERT INTO `zrx_armour` (identifier) VALUES (?)', { xPlayer.identifier })
             return
-        elseif not data.drawable or data.texture == 0 then
+        elseif not data.drawable or data.texture == 0 or data.value == 0 then
             return
         end
 
@@ -32,14 +32,21 @@ Player = {
         PLAYER_CACHE[xPlayer.player].vData.drawable = data.drawable
         PLAYER_CACHE[xPlayer.player].vData.texture = data.texture
 
+        for k, data2 in pairs(Config.Armour) do
+            if data.drawable == data2.vest.male.drawable or data.drawable == data2.vest.female.drawable and
+            data.texture == data2.vest.male.texture or data.texture == data2.vest.female.texture then
+                CURRENT = k
+            end
+        end
+
         while GetPedArmour(GetPlayerPed(xPlayer.player)) ~= data.value do
             SetPedArmour(GetPlayerPed(xPlayer.player), data.value)
-            Wait()
+            Wait(0)
         end
 
         SetPedComponentVariation(GetPlayerPed(xPlayer.player), 9, data.drawable, data.texture, 0)
 
-        TriggerClientEvent('zrx_armour:client:setState', xPlayer.player, { drawable = data.drawable, texture = data.texture }, true)
+        TriggerClientEvent('zrx_armour:client:setState', xPlayer.player, { drawable = data.drawable, texture = data.texture }, data.value > 0)
     end,
 
     Save = function(player)
