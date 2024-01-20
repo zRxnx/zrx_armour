@@ -8,10 +8,16 @@ Config.LoadAndSaveArmour = true --| Save armour in database?
 Config.Cooldown = 60 --| In seconds
 Config.OnPlayerDeathEvent = 'zrx_utility:bridge:onPlayerDeath' --| Event listener
 Config.OnPlayerLoadEvent = 'zrx_utility:bridge:playerLoaded' --| First parameter needs the player id
-Config.Inventory = 'ox' --| ox or default
+
+--[[
+
+    If you want to use ox as inventory, read ITEMS.md
+
+--]]
+Config.Inventory = false --| ox or false
 
 Config.TakeBack = { --| Command to take your current equipped armour back to the inv
-    enabled = true, --| Only supports ox inv
+    enabled = false, --| Only supports Config.Inventory to ox
 
     command = 'takearmour',
     usetime = 3 * seconds,

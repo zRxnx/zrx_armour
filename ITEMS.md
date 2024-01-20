@@ -7,13 +7,14 @@ These are example item definitions for ox_inventory
 - "stack" HAS to be false
 - "server.export" HAS to be there
 - If you dont use ox_inventory as config option, remove the server part entirly
+- You can change: item name, item label and item weight
 
 ---
 
 ```lua
     ['bulletproof_small'] = {
-		label = 'bulletproof_small',
-		weight = 1,
+		label = 'Small vest',
+		weight = 1000,
 		stack = false,
 		close = true,
 		server = {
@@ -22,8 +23,8 @@ These are example item definitions for ox_inventory
 	},
 
 	['bulletproof_medium'] = {
-		label = 'bulletproof_medium',
-		weight = 1,
+		label = 'Medium vest',
+		weight = 1000,
 		stack = false,
 		close = true,
 		server = {
@@ -32,8 +33,8 @@ These are example item definitions for ox_inventory
 	},
 
 	['bulletproof_big'] = {
-		label = 'bulletproof_big',
-		weight = 1,
+		label = 'Big vest',
+		weight = 1000,
 		stack = false,
 		close = true,
 		server = {
