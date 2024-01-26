@@ -150,8 +150,14 @@ end
 --| Place here your punish actions
 Config.PunishPlayer = function(player, reason)
     if not IsDuplicityVersion() then return end
-    if Webhook.Settings.punish then
-        DiscordLog(player, 'PUNISH', reason, 'punish')
+    if Webhook.Links.punish:len() > 0 then
+        local message = ([[
+            The player got punished
+
+            Reason: **%s**
+        ]]):format(reason)
+
+        CORE.Server.DiscordLog(player, 'Punish', message, Webhook.Links.punish)
     end
 
     DropPlayer(player, reason)
