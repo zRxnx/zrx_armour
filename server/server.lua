@@ -47,7 +47,7 @@ RegisterNetEvent('zrx_armour:server:useArmour', function(index)
             CORE.Server.DiscordLog(source, 'USE ARMOUR', message, Webhook.Links.useArmour)
         end
 
-        CORE.Bridge.removeInventoryItem(source, Config.Armour[index].item, 1)
+        CORE.Bridge.getPlayerObject(source).removeInventoryItem(Config.Armour[index].item, 1)
     else
         Config.PunishPlayer(source, 'Tried to trigger "zrx_armour:server:useArmour"')
     end
@@ -131,7 +131,7 @@ CreateThread(function()
                 return
             end
 
-            local xPlayer = CORE.Bridge.getVariables(inventory.player.source)
+            local xPlayer = CORE.Bridge.getPlayerObject(inventory.player.source)
             item = OX_INV:GetSlot(inventory.player.source, slot)
 
             if Player.HasCooldown(inventory.player.source) then
@@ -172,7 +172,7 @@ CreateThread(function()
     else
         for i, data in pairs(Config.Armour) do
             CORE.Bridge.registerUsableItem(data.item, function(source)
-                local xPlayer = CORE.Bridge.getVariables(source)
+                local xPlayer = CORE.Bridge.getPlayerObject(source)
 
                 if Player.HasCooldown(source) then
                     return CORE.Bridge.notification(source, Strings.on_cooldown)

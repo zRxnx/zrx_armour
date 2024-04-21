@@ -12,7 +12,7 @@ UseArmour = function(index, value)
         return CORE.Bridge.notification(Strings.in_vehicle)
     end
 
-    if data.allowedJobs and not data.allowedJobs[CORE.Bridge.getVariables().job.name] then
+    if data.allowedJobs and not data.allowedJobs[CORE.Bridge.getPlayerObject().job.name] then
         TriggerServerEvent('zrx_armour:server:cancelArmour')
         return CORE.Bridge.notification(Strings.not_permitted)
     end

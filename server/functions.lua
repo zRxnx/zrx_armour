@@ -7,7 +7,7 @@ local Wait = Wait
 
 Player = {
     Load = function(player)
-        local xPlayer = CORE.Bridge.getVariables(player)
+        local xPlayer = CORE.Bridge.getPlayerObject(player)
         local response = MySQL.query.await('SELECT * FROM `zrx_armour` WHERE `identifier` = ?', { xPlayer.identifier })
         local data = response[1]
 
@@ -50,7 +50,7 @@ Player = {
     end,
 
     Save = function(player)
-        local xPlayer = CORE.Bridge.getVariables(player)
+        local xPlayer = CORE.Bridge.getPlayerObject(player)
         if not xPlayer then return end
         local ped = GetPlayerPed(xPlayer.player)
 
@@ -73,7 +73,7 @@ Player = {
     end,
 
     Reset = function(player)
-        local xPlayer = CORE.Bridge.getVariables(player)
+        local xPlayer = CORE.Bridge.getPlayerObject(player)
         local ped = GetPlayerPed(xPlayer.player)
 
         if Webhook.Links.loadArmour:len() > 0 then
