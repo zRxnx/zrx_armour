@@ -5,7 +5,7 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Advanced armour system'
-version '2.5.0'
+version '2.6.0'
 
 dependencies {
     'zrx_utility',

@@ -78,7 +78,7 @@ if Config.Inventory == 'ox' and Config.TakeBack then
             return CORE.Bridge.notification(source, Strings.no_armour)
         end
 
-        local response = lib.callback.await('zrx_armour:client:awaitState', source)
+        local response = lib.callback.await('zrx_armour:client:awaitState', source, CURRENT)
 
         if not response then
             return
@@ -145,10 +145,10 @@ CreateThread(function()
             end
 
             USED[inventory.player.source] = true
-            if xPlayer.sex == 'm' then
+            if xPlayer.sex == 'm' and Config.Armour[index].vest?.male?.drawable then
                 PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.male.drawable
                 PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.male.texture
-            else
+            elseif Config.Armour[index].vest?.female?.drawable then
                 PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.female.drawable
                 PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.female.texture
             end
@@ -183,10 +183,10 @@ CreateThread(function()
                 end
 
                 USED[source] = true
-                if xPlayer.sex == 'm' then
+                if xPlayer.sex == 'm' and data.vest.male?.drawable then
                     PLAYER_CACHE[source].vData.drawable = data.vest.male.drawable
                     PLAYER_CACHE[source].vData.texture = data.vest.male.texture
-                else
+                elseif data.vest?.female?.drawable then
                     PLAYER_CACHE[source].vData.drawable = data.vest.female.drawable
                     PLAYER_CACHE[source].vData.texture = data.vest.female.texture
                 end

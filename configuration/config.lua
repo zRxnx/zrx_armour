@@ -14,10 +14,10 @@ Config.OnPlayerLoadEvent = 'zrx_utility:bridge:playerLoaded' --| First parameter
     If you want to use ox as inventory, read ITEMS.md
 
 --]]
-Config.Inventory = false --| ox or false
+Config.Inventory = 'ox' --| ox or false
 
 Config.TakeBack = { --| Command to take your current equipped armour back to the inv
-    enabled = false, --| Only supports Config.Inventory to ox
+    enabled = true, --| Only supports Config.Inventory to ox
 
     command = 'takearmour',
     usetime = 3 * seconds,
@@ -44,7 +44,7 @@ Config.Armour = {
             unemployed = true
         },
 
-        vest = {
+        vest = { --| Remove female and male to disable clothing | Setting it to 0 is not enough
             female = {
                 drawable = 10, --| Vest drawable
                 texture = 0 --| Vest texture
@@ -78,7 +78,7 @@ Config.Armour = {
             unemployed = true
         },
 
-        vest = {
+        vest = { --| Remove female and male to disable clothing | Setting it to 0 is not enough
             female = {
                 drawable = 10, --| Vest drawable
                 texture = 1 --| Vest texture
@@ -112,7 +112,7 @@ Config.Armour = {
             unemployed = true
         },
 
-        vest = {
+        vest = { --| Remove female and male to disable clothing | Setting it to 0 is not enough
             female = {
                 drawable = 10, --| Vest drawable
                 texture = 2 --| Vest texture

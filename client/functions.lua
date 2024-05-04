@@ -35,13 +35,15 @@ UseArmour = function(index, value)
     end
 
     if IsPedMale(cache.ped) then
-        Component = { drawable = data.vest.male.drawable, texture = data.vest.male.texture }
+        Component = { drawable = data.vest?.male?.drawable, texture = data.vest?.male?.texture }
     else
-        Component = { drawable = data.vest.female.drawable, texture = data.vest.female.texture }
+        Component = { drawable = data.vest?.female?.drawable, texture = data.vest?.female?.texture }
     end
 
     SetPedArmour(cache.ped, value)
-    SetPedComponentVariation(cache.ped, 9, data.vest.drawable, data.vest.texture, 0)
+    if type(Component.drawable) == 'number' then
+        SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 0)
+    end
 
     CORE.Bridge.notification(Strings.taken)
     TriggerServerEvent('zrx_armour:server:useArmour', index)

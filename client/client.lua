@@ -44,7 +44,7 @@ CreateThread(function()
     end
 end)
 
-lib.callback.register('zrx_armour:client:awaitState', function()
+lib.callback.register('zrx_armour:client:awaitState', function(index)
     local state = lib.progressBar({
         duration = Config.TakeBack.usetime,
         label = Strings.using,
@@ -64,7 +64,10 @@ lib.callback.register('zrx_armour:client:awaitState', function()
 
     HasArmour = false
     SetPedArmour(cache.ped, 0)
-    SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
+
+    if Config.Armour[index].vest?.male?.drawable then
+        SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
+    end
 
     return true
 end)

@@ -44,7 +44,9 @@ Player = {
             Wait(0)
         end
 
-        SetPedComponentVariation(GetPlayerPed(xPlayer.player), 9, data.drawable, data.texture, 0)
+        if type(data.drawable) == 'number' then
+            SetPedComponentVariation(GetPlayerPed(xPlayer.player), 9, data.drawable, data.texture, 0)
+        end
 
         TriggerClientEvent('zrx_armour:client:setState', xPlayer.player, { drawable = data.drawable, texture = data.texture }, data.value > 0)
     end,
@@ -84,7 +86,9 @@ Player = {
             CORE.Server.DiscordLog(player, 'LOAD ARMOUR', message, Webhook.Links.loadArmour)
         end
 
-        SetPedComponentVariation(ped, 9, 0, 0, 0)
+        if Config.Armour[CURRENT].vest?.male?.drawable then
+            SetPedComponentVariation(ped, 9, 0, 0, 0)
+        end
         MySQL.update.await('UPDATE `zrx_armour` SET `value` = ?, `drawable` = ?, `texture` = ? WHERE identifier = ?', { 0, 0, 0, xPlayer.identifier })
 
         TriggerClientEvent('zrx_armour:client:setState', xPlayer.player, {}, false)
