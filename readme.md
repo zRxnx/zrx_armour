@@ -2,6 +2,10 @@
 
 This is an advanced armour system for fivem
 
+**https://docs.zrxnx.at**
+
+**https://discord.gg/mcN25FJ33K**
+
 ## About
 
 ### Features
