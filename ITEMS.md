@@ -8,6 +8,7 @@ These are example item definitions for ox_inventory
 - "server.export" HAS to be there
 - If you dont use ox_inventory as config option, remove the server part entirly
 - You can change: item name, item label and item weight
+- The export name has to be the item name, examples below
 
 ---
 
@@ -18,7 +19,7 @@ These are example item definitions for ox_inventory
 		stack = false,
 		close = true,
 		server = {
-			export = 'zrx_armour.useItem'
+			export = 'zrx_armour.bulletproof_small'
 		}
 	},
 
@@ -28,7 +29,7 @@ These are example item definitions for ox_inventory
 		stack = false,
 		close = true,
 		server = {
-			export = 'zrx_armour.useItem'
+			export = 'zrx_armour.bulletproof_medium'
 		}
 	},
 
@@ -38,7 +39,7 @@ These are example item definitions for ox_inventory
 		stack = false,
 		close = true,
 		server = {
-			export = 'zrx_armour.useItem'
+			export = 'zrx_armour.bulletproof_big'
 		}
 	},
 ```

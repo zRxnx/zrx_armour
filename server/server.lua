@@ -115,60 +115,62 @@ CreateThread(function()
     end
 
     if Config.Inventory == 'ox' then
-        exports('useItem', function(event, item, inventory, slot)
-            if event ~= 'usingItem' then return end
-            local index = 0
+        for k, data in pairs(Config.Armour) do
+            exports(data.item, function(event, item, inventory, slot)
+                if event ~= 'usingItem' then return end
+                local index = 0
 
-            for k, data in pairs(Config.Armour) do
-                index = item.name == data.item and k or 0
+                for k, data in pairs(Config.Armour) do
+                    index = item.name == data.item and k or 0
 
-                if index > 0 then
-                    break
+                    if index > 0 then
+                        break
+                    end
                 end
-            end
 
-            if index == 0 then
-                return
-            end
+                if index == 0 then
+                    return
+                end
 
-            local xPlayer = CORE.Bridge.getPlayerObject(inventory.player.source)
-            item = OX_INV:GetSlot(inventory.player.source, slot)
+                local xPlayer = CORE.Bridge.getPlayerObject(inventory.player.source)
+                item = OX_INV:GetSlot(inventory.player.source, slot)
 
-            if Player.HasCooldown(inventory.player.source) then
-                CORE.Bridge.notification(inventory.player.source, Strings.on_cooldown)
+                if Player.HasCooldown(inventory.player.source) then
+                    CORE.Bridge.notification(inventory.player.source, Strings.on_cooldown)
+                    return false
+                end
+
+                if USED[inventory.player.source] then
+                    CORE.Bridge.notification(inventory.player.source, Strings.already_using)
+                    return false
+                end
+
+                USED[inventory.player.source] = true
+                if xPlayer.sex == 'm' and Config.Armour[index].vest?.male?.drawable then
+                    PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.male.drawable
+                    PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.male.texture
+                elseif Config.Armour[index].vest?.female?.drawable then
+                    PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.female.drawable
+                    PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.female.texture
+                end
+
+                if Webhook.Links.startArmour:len() > 0 then
+                    local message = ([[
+                        The player started a armour
+            
+                        Item: **%s**
+                        Value: **%s**
+                        Index: **%s**
+                    ]]):format(item.name, item.metadata.value, index)
+
+                    CORE.Server.DiscordLog(inventory.player.source, 'START ARMOUR', message, Webhook.Links.startArmour)
+                end
+
+                TriggerClientEvent('zrx_armour:client:useArmour', inventory.player.source, index, item.metadata.value)
+
                 return false
-            end
-
-            if USED[inventory.player.source] then
-                CORE.Bridge.notification(inventory.player.source, Strings.already_using)
-                return false
-            end
-
-            USED[inventory.player.source] = true
-            if xPlayer.sex == 'm' and Config.Armour[index].vest?.male?.drawable then
-                PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.male.drawable
-                PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.male.texture
-            elseif Config.Armour[index].vest?.female?.drawable then
-                PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.female.drawable
-                PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.female.texture
-            end
-
-            if Webhook.Links.startArmour:len() > 0 then
-                local message = ([[
-                    The player started a armour
-        
-                    Item: **%s**
-                    Value: **%s**
-                    Index: **%s**
-                ]]):format(item.name, item.metadata.value, index)
-
-                CORE.Server.DiscordLog(inventory.player.source, 'START ARMOUR', message, Webhook.Links.startArmour)
-            end
-
-            TriggerClientEvent('zrx_armour:client:useArmour', inventory.player.source, index, item.metadata.value)
-
-            return false
-        end)
+            end)
+        end
     else
         for i, data in pairs(Config.Armour) do
             CORE.Bridge.registerUsableItem(data.item, function(source)
