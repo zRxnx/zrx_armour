@@ -5,7 +5,7 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Advanced armour system'
-version '2.6.2'
+version '2.7.0'
 
 docs 'https://docs.zrxnx.at'
 discord 'https://discord.gg/mcN25FJ33K'

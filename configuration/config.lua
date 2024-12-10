@@ -35,8 +35,7 @@ Config.TakeBack = { --| Command to take your current equipped armour back to the
 }
 
 Config.Armour = {
-    {
-        item = 'bulletproof_small', --| Item name
+    ['bulletproof_small'] = {
         usetime = 3 * seconds, --| Usetime
         value = 25, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
@@ -69,8 +68,7 @@ Config.Armour = {
         },
     },
 
-    {
-        item = 'bulletproof_medium', --| Item name
+    ['bulletproof_medium'] = {
         usetime = 3 * seconds, --| Usetime
         value = 50, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
@@ -103,8 +101,7 @@ Config.Armour = {
         },
     },
 
-    {
-        item = 'bulletproof_big', --| Item name
+    ['bulletproof_big'] = {
         usetime = 3 * seconds, --| Usetime
         value = 100, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?

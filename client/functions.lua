@@ -1,9 +1,3 @@
-local SetPedArmour = SetPedArmour
-local SetPedComponentVariation = SetPedComponentVariation
-local TriggerServerEvent = TriggerServerEvent
-local DoesEntityExist = DoesEntityExist
-local IsPedMale = IsPedMale
-
 UseArmour = function(index, value)
     local data = Config.Armour[index]
 
@@ -41,6 +35,7 @@ UseArmour = function(index, value)
     end
 
     SetPedArmour(cache.ped, value)
+
     if type(Component.drawable) == 'number' then
         SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 0)
     end

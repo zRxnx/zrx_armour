@@ -19,7 +19,7 @@ These are example item definitions for ox_inventory
 		stack = false,
 		close = true,
 		server = {
-			export = 'zrx_armour.bulletproof_small'
+			export = 'zrx_armour.useItem'
 		}
 	},
 
@@ -29,7 +29,7 @@ These are example item definitions for ox_inventory
 		stack = false,
 		close = true,
 		server = {
-			export = 'zrx_armour.bulletproof_medium'
+			export = 'zrx_armour.useItem'
 		}
 	},
 
@@ -39,7 +39,7 @@ These are example item definitions for ox_inventory
 		stack = false,
 		close = true,
 		server = {
-			export = 'zrx_armour.bulletproof_big'
+			export = 'zrx_armour.useItem'
 		}
 	},
 ```

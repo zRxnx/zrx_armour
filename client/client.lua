@@ -1,10 +1,5 @@
 CORE = exports.zrx_utility:GetUtility()
 HasArmour, DisplayArmour, Component = false, true, {}
-local GetPedArmour = GetPedArmour
-local SetPedComponentVariation = SetPedComponentVariation
-local GetPedTextureVariation = GetPedTextureVariation
-local GetPedDrawableVariation = GetPedDrawableVariation
-local Wait = Wait
 
 RegisterNetEvent('zrx_armour:client:useArmour', function(index, value)
     UseArmour(index, value)
@@ -15,7 +10,15 @@ RegisterNetEvent('zrx_armour:client:setState', function(data, state)
         Component = data
     end
 
-    HasArmour = state
+    if state then
+        SetPedArmour(cache.ped, state)
+
+        Wait(1000)
+
+        HasArmour = true
+    else
+        HasArmour = false
+    end
 end)
 
 CreateThread(function()
