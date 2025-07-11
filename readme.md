@@ -13,32 +13,38 @@ This is an advanced armour system for fivem
 - Extendable vest with saved data
 - Item based
 - Save armour after leave
-- Remove vest after no armour
+- Remove vest on armour break
 - Force vest while armour
 - Allowed Jobs/Vehicle
 - Highly configurable
 - Synced between all players
 - Protected Events
-- Discord log with many information
+- ox_lib log system
 - Update checker
 - 0.0 ms on idle
 - 0.0 ms while in use
 
-### Exports
-
-- hasArmour (client)
-- displayArmour (client)
-- hasCooldown (server)
-
 ## Requirements
 
-- zrx_utility (latest)
 - ox_lib (latest)
 - oxmysql (latest)
 
+### API
+
+#### Exports
+
+- hasArmour (client)
+- displayArmour (client)
+
+#### Statebags
+
+- zrx_armour:drawable (replicated)
+- zrx_armour:texture (replicated)
+- zrx_armour:current (replicated)
+
 ## Preview
 
-![Discord Log](https://i.imgur.com/TDfftS2.png)
+### [Video](https://youtu.be/rl-Ig8bof9U)
 
 ## Installation
 

@@ -1,15 +1,6 @@
 UseArmour = function(index, value)
+    print(value, index)
     local data = Config.Armour[index]
-
-    if not data.allowedInVehicles and DoesEntityExist(cache.vehicle) then
-        TriggerServerEvent('zrx_armour:server:cancelArmour')
-        return CORE.Bridge.notification(Strings.in_vehicle)
-    end
-
-    if data.allowedJobs and not data.allowedJobs[CORE.Bridge.getPlayerObject().job.name] then
-        TriggerServerEvent('zrx_armour:server:cancelArmour')
-        return CORE.Bridge.notification(Strings.not_permitted)
-    end
 
     local response = lib.progressBar({
         duration = data.usetime,
@@ -28,20 +19,25 @@ UseArmour = function(index, value)
         return
     end
 
-    if IsPedMale(cache.ped) then
-        Component = { drawable = data.vest?.male?.drawable, texture = data.vest?.male?.texture }
-    else
-        Component = { drawable = data.vest?.female?.drawable, texture = data.vest?.female?.texture }
-    end
+    Component = {
+        drawable = LocalPlayer.state['zrx_armour:drawable'],
+        texture = LocalPlayer.state['zrx_armour:texture'],
+    }
 
     SetPedArmour(cache.ped, value)
+    print(GetPedArmour(cache.ped))
 
-    if type(Component.drawable) == 'number' then
-        SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 0)
+    while GetPedArmour(cache.ped) ~= value do
+        SetPedArmour(cache.ped, value)
+        Wait(0)
     end
 
-    CORE.Bridge.notification(Strings.taken)
-    TriggerServerEvent('zrx_armour:server:useArmour', index)
+    print(GetPedArmour(cache.ped))
+
+    SetPedComponentVariation(cache.ped, 9, Component.drawable, Component.texture, 0)
+
+    ZRX_UTIL.notify(nil, Strings.taken)
+    TriggerServerEvent('zrx_armour:server:manageArmour', { action = 'use', index = index })
 
     HasArmour = true
 end

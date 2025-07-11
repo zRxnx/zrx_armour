@@ -3,31 +3,33 @@ game 'gta5'
 lua54 'yes'
 use_experimental_fxv2_oal 'yes'
 
+name 'zrx_armour'
 author 'zRxnx'
+version '3.0.0'
 description 'Advanced armour system'
-version '2.7.0'
+repository 'https://github.com/zrxnx/zrx_armour'
 
 docs 'https://docs.zrxnx.at'
 discord 'https://discord.gg/mcN25FJ33K'
 
 dependencies {
-    'zrx_utility',
+    '/server:6116',
+    '/onesync',
 	'ox_lib',
-    'oxmysql'
+    'oxmysql',
 }
 
 shared_scripts {
     '@ox_lib/init.lua',
-    'configuration/config.lua',
-    'configuration/strings.lua',
+    'utils.lua',
+    'configuration/*.lua',
 }
 
 client_scripts {
-    'client/*.lua'
+    'client/*.lua',
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'configuration/webhook.lua',
-    'server/*.lua'
+    'server/*.lua',
 }

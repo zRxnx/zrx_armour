@@ -1,26 +1,17 @@
 local seconds, minutes = 1000, 60000
 Config = {}
 
-Config.CheckForUpdates = true --| Check for updates?
 Config.RemoveArmourOnBreak = true --| Should the vest be removed after no more armour
 Config.ForceComponent = true --| Reset player component while armour active
-Config.LoadAndSaveArmour = true --| Save armour in database?
-Config.Cooldown = 60 --| In seconds
-Config.OnPlayerDeathEvent = 'zrx_utility:bridge:onPlayerDeath' --| Event listener
-Config.OnPlayerLoadEvent = 'zrx_utility:bridge:playerLoaded' --| First parameter needs the player id
-
---[[
-
-    If you want to use ox as inventory, read ITEMS.md
-
---]]
-Config.Inventory = 'ox' --| ox or false
+Config.OnPlayerDeathEvent = 'esx:onPlayerDeath' --| Event listener
+Config.OnPlayerLoadEvent = 'esx:playerLoaded' --| First parameter needs the player id
 
 Config.TakeBack = { --| Command to take your current equipped armour back to the inv
-    enabled = true, --| Only supports Config.Inventory to ox
+    enabled = true,
 
     command = 'takearmour',
     usetime = 3 * seconds,
+
     anim = {
         dict = 'clothingtie', --| Dict
         lib = 'try_tie_negative_a', --| Lib
@@ -35,15 +26,16 @@ Config.TakeBack = { --| Command to take your current equipped armour back to the
 }
 
 Config.Armour = {
-    ['bulletproof_small'] = {
+    bulletproof_small = {
         usetime = 3 * seconds, --| Usetime
         value = 25, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
+
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
 
-        vest = { --| Remove female and male to disable clothing | Setting it to 0 is not enough
+        vest = {
             female = {
                 drawable = 10, --| Vest drawable
                 texture = 0 --| Vest texture
@@ -68,15 +60,16 @@ Config.Armour = {
         },
     },
 
-    ['bulletproof_medium'] = {
+    bulletproof_medium = {
         usetime = 3 * seconds, --| Usetime
         value = 50, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
+
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
 
-        vest = { --| Remove female and male to disable clothing | Setting it to 0 is not enough
+        vest = {
             female = {
                 drawable = 10, --| Vest drawable
                 texture = 1 --| Vest texture
@@ -101,15 +94,16 @@ Config.Armour = {
         },
     },
 
-    ['bulletproof_big'] = {
+    bulletproof_big = {
         usetime = 3 * seconds, --| Usetime
         value = 100, --| 0 - 100 value
         allowedInVehicles = false, --| Enabled?
+
         allowedJobs = { --| Allowed jobs
             unemployed = true
         },
 
-        vest = { --| Remove female and male to disable clothing | Setting it to 0 is not enough
+        vest = {
             female = {
                 drawable = 10, --| Vest drawable
                 texture = 2 --| Vest texture
@@ -135,27 +129,26 @@ Config.Armour = {
     }
 }
 
---| Place here your punish actions
-Config.PunishPlayer = function(player, reason)
-    if not IsDuplicityVersion() then return end
-    if Webhook.Links.punish:len() > 0 then
-        local message = ([[
-            The player got punished
-
-            Reason: **%s**
-        ]]):format(reason)
-
-        CORE.Server.DiscordLog(player, 'Punish', message, Webhook.Links.punish)
+Config.Notify = function(player, msg, title, type, color, time)
+    if IsDuplicityVersion() then
+        TriggerClientEvent('ox_lib:notify', player, {
+            title = title,
+            description = msg,
+            type = type,
+            duration = time,
+            style = {
+                color = color
+            }
+        })
+    else
+        lib.notify({
+            title = title,
+            description = msg,
+            type = type,
+            duration = time,
+            style = {
+                color = color
+            }
+        })
     end
-
-    DropPlayer(player, reason)
-end
-
---| Place here your esx Import
-Config.EsxImport = function()
-	if IsDuplicityVersion() then
-		return exports.es_extended:getSharedObject()
-	else
-		return exports.es_extended:getSharedObject()
-	end
 end

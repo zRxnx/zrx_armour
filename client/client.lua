@@ -1,4 +1,3 @@
-CORE = exports.zrx_utility:GetUtility()
 HasArmour, DisplayArmour, Component = false, true, {}
 
 RegisterNetEvent('zrx_armour:client:useArmour', function(index, value)
@@ -27,7 +26,12 @@ CreateThread(function()
             if GetPedArmour(cache.ped) == 0 then
                 HasArmour = false
                 SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
-                CORE.Bridge.notification(Strings.broke)
+                Component = {
+                    drawable = 0,
+                    texture = 0
+                }
+                ZRX_UTIL.notify(nil, Strings.broke)
+                TriggerServerEvent('zrx_armour:server:manageArmour', { action = 'break' })
             end
         end
 
@@ -47,17 +51,19 @@ CreateThread(function()
     end
 end)
 
-lib.callback.register('zrx_armour:client:awaitState', function(index)
+lib.callback.register('zrx_armour:client:await', function(index)
+    local config = Config.TakeBack
+
     local state = lib.progressBar({
-        duration = Config.TakeBack.usetime,
+        duration = config.usetime,
         label = Strings.using,
         useWhileDead = false,
         canCancel = true,
-        disable = Config.TakeBack.disable,
+        disable = config.disable,
         anim = {
-            dict = Config.TakeBack.anim.dict,
-            clip = Config.TakeBack.anim.lib,
-            flag = Config.TakeBack.anim.flag
+            dict = config.anim.dict,
+            clip = config.anim.lib,
+            flag = config.anim.flag
         },
     })
 
@@ -68,9 +74,10 @@ lib.callback.register('zrx_armour:client:awaitState', function(index)
     HasArmour = false
     SetPedArmour(cache.ped, 0)
 
-    if Config.Armour[index].vest?.male?.drawable then
-        SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
-    end
+    print(index)
+    print(json.encode(Config.Armour[index], {indent = true}))
+
+    SetPedComponentVariation(cache.ped, 9, 0, 0, 0)
 
     return true
 end)
@@ -81,4 +88,8 @@ end)
 
 exports('displayArmour', function(bool)
     DisplayArmour = bool
+
+    if not bool then
+        SetPedComponentVariation(cache.ped, 9, 0, 0, 2)
+    end
 end)

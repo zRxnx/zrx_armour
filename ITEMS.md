@@ -6,9 +6,7 @@ These are example item definitions for ox_inventory
 
 - "stack" HAS to be false
 - "server.export" HAS to be there
-- If you dont use ox_inventory as config option, remove the server part entirly
 - You can change: item name, item label and item weight
-- The export name has to be the item name, examples below
 
 ---
 

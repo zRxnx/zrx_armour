@@ -1,186 +1,129 @@
----@diagnostic disable: need-check-nil, cast-local-type
-CORE = exports.zrx_utility:GetUtility()
-OX_INV = exports?.ox_inventory
-PLAYER_CACHE, USED, COOLDOWN, CURRENT = {}, {}, {}, 1
-
+---@diagnostic disable: need-check-nil, cast-local-type, missing-parameter
 RegisterNetEvent(Config.OnPlayerLoadEvent, function(player)
-    PLAYER_CACHE[player] = CORE.Server.GetPlayerCache(player)
-    PLAYER_CACHE[player].vData = {}
-    Player.Load(player)
+    Wait(1000)
+    ManagePlayer(player).load()
 end)
 
-RegisterNetEvent(Config.OnPlayerDeathEvent, function(player)
-    Player.Reset(player)
+RegisterNetEvent(Config.OnPlayerDeathEvent, function()
+    local player = source
+    Wait(1000)
+    ManagePlayer(player).reset()
 end)
 
 AddEventHandler('playerDropped', function()
-    if not PLAYER_CACHE[source] then return end
-    Player.Save(source)
+    local player = source
+    print('playerDropped', player)
+    local armour = GetPedArmour(GetPlayerPed(player))
+    print('playerDropped', armour)
+
+    ManagePlayer(player).save(armour)
 end)
 
 AddEventHandler('onResourceStop', function(res)
     if res ~= GetCurrentResourceName() then return end
 
-    for i, player in pairs(GetPlayers()) do
-        player = tonumber(player)
-        Player.Save(player)
-    end
-end)
+    CreateThread(function()
+        Wait(1000)
 
-RegisterNetEvent('zrx_armour:server:useArmour', function(index)
-    if USED[source] then
-        USED[source] = false
-        CURRENT = index
-
-        if Webhook.Links.useArmour:len() > 0 then
-            local message = ([[
-                The player used a armour
-    
-                Item: **%s**
-                Value: **%s**
-            ]]):format(index, Config.Armour[index].value)
-
-            CORE.Server.DiscordLog(source, 'USE ARMOUR', message, Webhook.Links.useArmour)
+        for player, state in pairs(ZRX_UTIL.getPlayers()) do
+            print('tosave', player)
+            ManagePlayer(player).save()
         end
+    end)
+end)
 
-        CORE.Bridge.getPlayerObject(source).removeInventoryItem(index, 1)
-    else
-        Config.PunishPlayer(source, 'Tried to trigger "zrx_armour:server:useArmour"')
+RegisterNetEvent('zrx_armour:server:manageArmour', function(data)
+    local player = source
+
+    if data.action == 'use' and Player(player).state['zrx_armour:used'] then
+        print('use', Player(player).state['zrx_armour:current'])
+        Player(player).state:set('zrx_armour:used', false, true)
+        Player(player).state:set('zrx_armour:current', data.index, true)
+
+        ZRX_UTIL.invObj:RemoveItem(player, data.index, 1)
+        lib.logger(player, 'zrx_armour:usedArmour', ('I: %s'):format(data.index))
+        ManagePlayer(player).save()
+    elseif data.action == 'break' then
+        print('break')
+        lib.logger(player, 'zrx_armour:breakArmour', ('I: %s'):format(data.index))
+        ManagePlayer(player).reset()
     end
 end)
 
-RegisterNetEvent('zrx_armour:server:cancelArmour', function()
-    if USED[source] then
-        USED[source] = false
-
-        if Webhook.Links.cancelArmour:len() > 0 then
-            local message = [[
-                The player cancelled a armour
-            ]]
-
-            CORE.Server.DiscordLog(source, 'CANCEL ARMOUR', message, Webhook.Links.cancelArmour)
-        end
-    else
-        Config.PunishPlayer(source, 'Tried to trigger "zrx_armour:server:cancelArmour"')
-    end
-end)
-
-if Config.Inventory == 'ox' and Config.TakeBack then
-    RegisterCommand(Config.TakeBack.command, function(source)
-        local ped = GetPlayerPed(source)
+if Config.TakeBack then
+    RegisterCommand(Config.TakeBack.command, function(player)
+        local ped = GetPlayerPed(player)
         local armour = GetPedArmour(ped)
 
         if armour == 0 then
-            return CORE.Bridge.notification(source, Strings.no_armour)
+            ZRX_UTIL.notify(player, Strings.no_armour)
+            return
         end
 
-        local response = lib.callback.await('zrx_armour:client:awaitState', source, CURRENT)
+        local response = lib.callback.await('zrx_armour:client:await', player, Player(player).state['zrx_armour:current'])
 
         if not response then
             return
         end
 
-        Player.Reset(source)
-        OX_INV:AddItem(source, CURRENT, 1, { value = armour, description = Strings.value:format(armour) })
-        CORE.Bridge.notification(source, Strings.taken_off)
+        print('takeback', Player(player).state['zrx_armour:current'], armour, Strings.value:format(armour))
+        ZRX_UTIL.invObj:AddItem(player, Player(player).state['zrx_armour:current'], 1, { value = armour, description = Strings.value:format(armour) })
+        ManagePlayer(player).reset()
+        ZRX_UTIL.notify(player, Strings.taken_off)
     end)
 end
 
 CreateThread(function()
-    if Config.CheckForUpdates then
-        CORE.Server.CheckVersion('zrx_armour')
-    end
+    lib.versionCheck('zrxnx/zrx_armour')
 
     MySQL.Sync.execute([[
         CREATE Table IF NOT EXISTS `zrx_armour` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
-            `identifier` varchar(255) DEFAULT NULL,
+            `identifier` varchar(50) DEFAULT NULL,
             `value` int(100) DEFAULT 0,
-            `drawable` varchar(255) DEFAULT 0,
-            `texture` varchar(255) DEFAULT 0,
+            `type` longtext DEFAULT NULL,
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB;
     ]])
 
-    for i, player in pairs(GetPlayers()) do
-        player = tonumber(player)
-        PLAYER_CACHE[player] = CORE.Server.GetPlayerCache(player)
-        PLAYER_CACHE[player].vData = {}
-
-        Player.Load(player)
+    Wait(1000)
+    for player, state in pairs(ZRX_UTIL.getPlayers()) do
+        print('toload', player)
+        ManagePlayer(player).load()
     end
 
-    if Config.Inventory ~= 'ox' then
+    ZRX_UTIL.invObj:registerHook('createItem', function(payload)
+        local index = ''
+
         for item, data in pairs(Config.Armour) do
-            CORE.Bridge.registerUsableItem(item, function(source)
-                local xPlayer = CORE.Bridge.getPlayerObject(source)
+            index = payload.item.name == item and item or ''
 
-                if Player.HasCooldown(source) then
-                    return CORE.Bridge.notification(source, Strings.on_cooldown)
-                end
-
-                if USED[source] then
-                    return CORE.Bridge.notification(source, Strings.already_using)
-                end
-
-                USED[source] = true
-                if xPlayer.sex == 'm' and data.vest.male?.drawable then
-                    PLAYER_CACHE[source].vData.drawable = data.vest.male.drawable
-                    PLAYER_CACHE[source].vData.texture = data.vest.male.texture
-                elseif data.vest?.female?.drawable then
-                    PLAYER_CACHE[source].vData.drawable = data.vest.female.drawable
-                    PLAYER_CACHE[source].vData.texture = data.vest.female.texture
-                end
-
-                if Webhook.Links.startArmour:len() > 0 then
-                    local message = ([[
-                        The player started a armour
-            
-                        Item: **%s**
-                        Value: **%s**
-                    ]]):format(item, data.value)
-
-                    CORE.Server.DiscordLog(source, 'START ARMOUR', message, Webhook.Links.startArmour)
-                end
-
-                TriggerClientEvent('zrx_armour:client:useArmour', source, i, data.value)
-            end)
+            if index ~= '' then
+                break
+            end
         end
-    end
 
-    if Config.Inventory == 'ox' then
-        OX_INV:registerHook('createItem', function(payload)
-            local index = ''
+        if index == '' then
+            return
+        end
 
-            for item, data in pairs(Config.Armour) do
-                index = payload.item.name == item and item or ''
+        local metadata = payload.metadata
 
-                if index ~= '' then
-                    break
-                end
-            end
+        if not metadata.value then
+            metadata.value = Config.Armour[index].value
+            metadata.index = index
+            metadata.description = Strings.value:format(metadata.value)
+        end
 
-            if index == '' then
-                return
-            end
-
-            local metadata = payload.metadata
-
-            if not metadata.value then
-                metadata.value = Config.Armour[index].value
-                metadata.index = index
-                metadata.description = Strings.value:format(metadata.value)
-            end
-
-            return metadata
-        end, {
-            print = false,
-        })
-    end
+        return metadata
+    end, {
+        print = false,
+    })
 end)
 
 exports('useItem', function(event, item, inventory, slot)
     if event ~= 'usingItem' then return end
+
     local index = 0
 
     for item2, data in pairs(Config.Armour) do
@@ -195,44 +138,43 @@ exports('useItem', function(event, item, inventory, slot)
         return
     end
 
-    local xPlayer = CORE.Bridge.getPlayerObject(inventory.player.source)
-    item = OX_INV:GetSlot(inventory.player.source, slot)
+    local player = inventory.player.source
+    local data = Config.Armour[index]
+    local xPlayer = ZRX_UTIL.fwObj.GetPlayerFromId(player)
+    item = ZRX_UTIL.invObj:GetSlot(player, slot)
 
-    if Player.HasCooldown(inventory.player.source) then
-        CORE.Bridge.notification(inventory.player.source, Strings.on_cooldown)
+    print(item, player)
+
+    print('ui', player)
+
+    if data.allowedJobs and not data.allowedJobs[xPlayer.job.name] then
+        ZRX_UTIL.notify(player, Strings.not_permitted)
         return false
     end
 
-    if USED[inventory.player.source] then
-        CORE.Bridge.notification(inventory.player.source, Strings.already_using)
+    if not data.allowedInVehicles and DoesEntityExist(GetVehiclePedIsIn(GetPlayerPed(player), false)) then
+        ZRX_UTIL.notify(player, Strings.in_vehicle)
         return false
     end
 
-    USED[inventory.player.source] = true
-    if xPlayer.sex == 'm' and Config.Armour[index].vest?.male?.drawable then
-        PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.male.drawable
-        PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.male.texture
-    elseif Config.Armour[index].vest?.female?.drawable then
-        PLAYER_CACHE[inventory.player.source].vData.drawable = Config.Armour[index].vest.female.drawable
-        PLAYER_CACHE[inventory.player.source].vData.texture = Config.Armour[index].vest.female.texture
+    if Player(player).state['zrx_armour:used'] then
+        ZRX_UTIL.notify(player, Strings.already_using)
+        return false
     end
 
-    if Webhook.Links.startArmour:len() > 0 then
-        local message = ([[
-            The player started a armour
-
-            Item: **%s**
-            Value: **%s**
-        ]]):format(item.name, item.metadata.value)
-
-        CORE.Server.DiscordLog(inventory.player.source, 'START ARMOUR', message, Webhook.Links.startArmour)
+    Player(player).state:set('zrx_armour:used', true, true)
+    if xPlayer.sex == 'f' and data.vest.female.drawable then
+        Player(player).state:set('zrx_armour:drawable', data.vest.female.drawable, true)
+        Player(player).state:set('zrx_armour:texture', data.vest.female.texture, true)
+    else
+        Player(player).state:set('zrx_armour:drawable', data.vest.female.drawable, true)
+        Player(player).state:set('zrx_armour:texture', data.vest.female.texture, true)
     end
 
-    TriggerClientEvent('zrx_armour:client:useArmour', inventory.player.source, index, item.metadata.value)
+    Wait(100)
+    print(player, index, item.metadata.value or data.value)
+    TriggerClientEvent('zrx_armour:client:useArmour', player, index, item.metadata.value or data.value)
+    print(player, index, item.metadata.value or data.value)
 
     return false
-end)
-
-exports('hasCooldown', function(player)
-    return not not COOLDOWN[PLAYER_CACHE[player].license]
 end)
